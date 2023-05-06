@@ -15,7 +15,7 @@ from Vizinhanca import Vizinhanca
 # from BuscaHibridaGulosoMelhorMelhora import BuscaHibridaGulosoMelhorMelhora
 # from BuscaHibridaGulosoTabu import BuscaHibridaGulosoTabu
 from BuscaLocalTemperaSimulada import BuscaLocalTemperaSimulada
-from BuscaHibridaGulosoTemperaSimulada import BuscaHibridaGulosoTemperaSimulada
+# from BuscaHibridaGulosoTemperaSimulada import BuscaHibridaGulosoTemperaSimulada
 
 
 def ler_arquivo(instancia: str) -> tuple:
@@ -96,8 +96,8 @@ def main():
             # BuscaLocalPrimeiraMelhora(VizinhancaShift(distancias), solucao_otima),
             # BuscaTabu(Vizinhanca2opt(distancias), solucao_otima, parametro_mandato),
             # BuscaTabu(VizinhancaShift(distancias), solucao_otima, parametro_mandato),
-            BuscaLocalTemperaSimulada(Vizinhanca2opt(distancias), solucao_otima, ESTR_RESFRIAMENTO_GEOMETRICO, ALPHA, SOLUCAO_INICIAL), 
-            BuscaHibridaGulosoTemperaSimulada(Vizinhanca(distancias), solucao_otima, ESTR_RESFRIAMENTO_GEOMETRICO, ALPHA),
+            BuscaLocalTemperaSimulada(Vizinhanca2opt(distancias), solucao_otima, ESTR_RESFRIAMENTO_GEOMETRICO, ALPHA), 
+            # BuscaHibridaGulosoTemperaSimulada(Vizinhanca(distancias), solucao_otima, ESTR_RESFRIAMENTO_GEOMETRICO, ALPHA),
             )
         tempo_limite = tamanho * parametro_tempo
         print("Instância:", instancias[idx])

@@ -27,7 +27,8 @@ class BuscaLocalTemperaSimulada(AlgoritmoBusca):
         self.resfriamento = lambda t: t * alpha if estrategia_resfriamento == 1 else lambda t: t - alpha if t - alpha >= 0 else lambda t: 0
 
         # Define a solução inicial
-        self.solucao = self.gerar_solucao_inicial_aleatoria() if self.solucao is None else self.solucao
+        self.solucao : Solucao
+        self.solucao = self.gerar_solucao_inicial_aleatoria() if solucao_inicial is None else solucao_inicial
 
 
 
@@ -53,7 +54,10 @@ class BuscaLocalTemperaSimulada(AlgoritmoBusca):
 
  
         # Gera uma solução vizinha
-        solucao_vizinha = self.vizinhanca.gerar_vizinho(self.solucao)
+
+        i, j = 0, 1
+        solucao_vizinha = self.vizinhanca.proximo_vizinho(self.solucao, i, j)   # Gera uma nova solução vizinha
+
 
         counter = 0
         while self.solucao.qualidade != self.solucao_otima or self.solucao.qualidade == solucao_vizinha.qualidade or time.time() < self.tempo_limite:
@@ -71,7 +75,7 @@ class BuscaLocalTemperaSimulada(AlgoritmoBusca):
             solucoes.append(self.solucao)                                   # Adiciona a solução atual na lista de soluções
             self.temperatura = self.resfriamento(self.temperatura)          # Resfria a temperatura
             counter += 1                                                    # Incrementa o contador de iterações
-            solucao_vizinha = self.vizinhanca.gerar_vizinho(self.solucao)   # Gera uma nova solução vizinha
+            solucao_vizinha = self.vizinhanca.proximo_vizinho(self.solucao, i+1, j+1)   # Gera uma nova solução vizinha
 
         return solucoes
 
