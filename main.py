@@ -2,16 +2,20 @@ import csv
 import statistics
 import time
 import os.path
-from BuscaLocalMelhorMelhora import BuscaLocalMelhorMelhora
-from BuscaLocalPrimeiraMelhora import BuscaLocalPrimeiraMelhora
-from BuscaTabu import BuscaTabu
+
+# from BuscaLocalMelhorMelhora import BuscaLocalMelhorMelhora
+# from BuscaLocalPrimeiraMelhora import BuscaLocalPrimeiraMelhora
+# from BuscaTabu import BuscaTabu
 from Vizinhanca2opt import Vizinhanca2opt
-from VizinhancaShift import VizinhancaShift
-from BuscaConstrutivaGulosoAlfa import BuscaConstrutivaGulosoAlfa
-from BuscaConstrutivaGulosa import BuscaConstrutivaGulosa
-from BuscaHibridaGulosoPrimeiraMelhora import BuscaHibridaGulosoPrimeiraMelhora
-from BuscaHibridaGulosoMelhorMelhora import BuscaHibridaGulosoMelhorMelhora
-from BuscaHibridaGulosoTabu import BuscaHibridaGulosoTabu
+from Vizinhanca import Vizinhanca
+# from VizinhancaShift import VizinhancaShift
+# from BuscaConstrutivaGulosoAlfa import BuscaConstrutivaGulosoAlfa
+# from BuscaConstrutivaGulosa import BuscaConstrutivaGulosa
+# from BuscaHibridaGulosoPrimeiraMelhora import BuscaHibridaGulosoPrimeiraMelhora
+# from BuscaHibridaGulosoMelhorMelhora import BuscaHibridaGulosoMelhorMelhora
+# from BuscaHibridaGulosoTabu import BuscaHibridaGulosoTabu
+from BuscaLocalTemperaSimulada import BuscaLocalTemperaSimulada
+from BuscaHibridaGulosoTemperaSimulada import BuscaHibridaGulosoTemperaSimulada
 
 
 def ler_arquivo(instancia: str) -> tuple:
@@ -62,6 +66,18 @@ parametro_alfa = 0.1  # 30% - guloso-alfa
 parametro_tempo = 0.06  # segundos * tamanho instância
 autoria = "FG"
 
+# Estratégias de resfriamento
+ESTR_RESFRIAMENTO_LINEAR = 0 
+ESTR_RESFRIAMENTO_GEOMETRICO = 1 
+
+# Para a progressão geométrica: 0,5 < α < 1
+# Para a progressão linear: 0 < α < 0,1
+ALPHA = 0.9
+
+# Solução inicial para Busca Local Tempera Simulada
+SOLUCAO_INICIAL = 1
+
+
 
 def main():
     for idx, arquivo in enumerate(arquivos):
@@ -69,17 +85,19 @@ def main():
         tamanho = len(distancias)
         solucao_otima = solucoes_otimas[idx]
         algoritmos = (
-            BuscaConstrutivaGulosa(distancias, solucao_otima),
-            BuscaConstrutivaGulosoAlfa(distancias, solucao_otima, parametro_alfa),
-            BuscaHibridaGulosoMelhorMelhora(Vizinhanca2opt(distancias), solucao_otima),
-            BuscaHibridaGulosoPrimeiraMelhora(Vizinhanca2opt(distancias), solucao_otima),
-            BuscaHibridaGulosoTabu(Vizinhanca2opt(distancias), solucao_otima, parametro_mandato),
-            BuscaLocalMelhorMelhora(Vizinhanca2opt(distancias), solucao_otima),
-            BuscaLocalMelhorMelhora(VizinhancaShift(distancias), solucao_otima),
-            BuscaLocalPrimeiraMelhora(Vizinhanca2opt(distancias), solucao_otima),
-            BuscaLocalPrimeiraMelhora(VizinhancaShift(distancias), solucao_otima),
-            BuscaTabu(Vizinhanca2opt(distancias), solucao_otima, parametro_mandato),
-            BuscaTabu(VizinhancaShift(distancias), solucao_otima, parametro_mandato),
+            # BuscaConstrutivaGulosa(distancias, solucao_otima),
+            # BuscaConstrutivaGulosoAlfa(distancias, solucao_otima, parametro_alfa),
+            # BuscaHibridaGulosoMelhorMelhora(Vizinhanca2opt(distancias), solucao_otima),
+            # BuscaHibridaGulosoPrimeiraMelhora(Vizinhanca2opt(distancias), solucao_otima),
+            # BuscaHibridaGulosoTabu(Vizinhanca2opt(distancias), solucao_otima, parametro_mandato),
+            # BuscaLocalMelhorMelhora(Vizinhanca2opt(distancias), solucao_otima),
+            # BuscaLocalMelhorMelhora(VizinhancaShift(distancias), solucao_otima),
+            # BuscaLocalPrimeiraMelhora(Vizinhanca2opt(distancias), solucao_otima),
+            # BuscaLocalPrimeiraMelhora(VizinhancaShift(distancias), solucao_otima),
+            # BuscaTabu(Vizinhanca2opt(distancias), solucao_otima, parametro_mandato),
+            # BuscaTabu(VizinhancaShift(distancias), solucao_otima, parametro_mandato),
+            BuscaLocalTemperaSimulada(Vizinhanca2opt(distancias), solucao_otima, ESTR_RESFRIAMENTO_GEOMETRICO, ALPHA, SOLUCAO_INICIAL), 
+            BuscaHibridaGulosoTemperaSimulada(Vizinhanca(distancias), solucao_otima, ESTR_RESFRIAMENTO_GEOMETRICO, ALPHA),
             )
         tempo_limite = tamanho * parametro_tempo
         print("Instância:", instancias[idx])

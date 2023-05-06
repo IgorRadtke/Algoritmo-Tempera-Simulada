@@ -3,6 +3,7 @@ from abc import abstractmethod
 
 
 class Vizinhanca:
+    
     def __init__(self, nome, distancias, qtd_trocas):
         self.nome = nome
         self.distancias = distancias
