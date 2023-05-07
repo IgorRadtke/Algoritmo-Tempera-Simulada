@@ -117,6 +117,10 @@ def main():
                 #escrever_resultados(resultados)
 
                 # Trecho usado para salvar no padrão das atividades
+                print("Lista de Soluções Geradas:" + str(solucao_list))
+
+                for i in range(len(solucao_list)):
+                    print("Solução " + str(i) + ": " + str(solucao_list[i].qualidade) + " " + str(solucao_list[i].tempo) + " " + str(solucao_list[i].iteracao))
                 melhor_qualidade = solucao_list[-1].qualidade
                 tempo_execucao = time.time() - tempo_inicial
                 resultados.append((melhor_qualidade, tempo_execucao))

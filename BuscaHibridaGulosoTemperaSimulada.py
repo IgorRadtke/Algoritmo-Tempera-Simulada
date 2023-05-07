@@ -2,7 +2,7 @@ from AlgoritmoBusca import AlgoritmoBusca
 from Solucao import Solucao
 from Vizinhanca import Vizinhanca
 from BuscaConstrutivaGulosa import BuscaConstrutivaGulosa
-from BuscaLocalTemperaSimulada import buscar_solucao as buscaLocalTemperaSimulada
+from BuscaLocalTemperaSimulada import BuscaLocalTemperaSimulada
 import time
 
 class BuscaHibridaGulosoTemperaSimulada(AlgoritmoBusca):
@@ -25,15 +25,21 @@ class BuscaHibridaGulosoTemperaSimulada(AlgoritmoBusca):
         # Configura a estratégia de resfriamento
         self.resfriamento = lambda t: t * alpha if estrategia_resfriamento == 1 else lambda t: t - alpha if t - alpha >= 0 else lambda t: 0
 
-        # Define a solução inicial usando o algoritmo guloso
-        self.solucao = BuscaConstrutivaGulosa(vizinhanca.distancias, solucao_otima).buscar_solucao()[0]
-
-    # Executa a busca local com tempera simulada
 
 
-
-    # Importar somente a função buscar_solucao da classe BuscaLocalTemperaSimulada
-    # não sei se isso funciona :)
     def buscar_solucao(self) -> list[Solucao]:
-        buscaLocalTemperaSimulada(self)
+
+        guloso = BuscaConstrutivaGulosa(self.distancias, self.solucao_otima)
+        solucoes_guloso = guloso.buscar_solucao()
+
+        solucoes = []
+        solucoes.extend(solucoes_guloso)
+
+        self.solucao = solucoes_guloso.sort(key=lambda solucao: solucao.qualidade)[0]
+
+        tempera_simulada = BuscaLocalTemperaSimulada(self.vizinhanca, self.solucao_otima, self.resfriamento, self.alpha, self.solucao)
+        solucoes_tempera_simulada = tempera_simulada.buscar_solucao()
+        solucoes.extend(solucoes_tempera_simulada)
+
+        return solucoes
         
