@@ -1,3 +1,4 @@
+from socket import timeout
 from AlgoritmoBusca import AlgoritmoBusca
 from Vizinhanca import Vizinhanca
 from Solucao import Solucao
@@ -58,6 +59,7 @@ class BuscaLocalTemperaSimulada(AlgoritmoBusca):
         solucoes.append(solucao_pivo)       # Adiciona a solução inicial
         melhor_solucao = solucao_pivo
         iteracao = 0
+        timeout = False
 
         # Valida as condições de parada: solução ótima, tempo limite
         while melhor_solucao.qualidade != self.solucao_otima or time.time() < self.tempo_limite:
@@ -68,61 +70,105 @@ class BuscaLocalTemperaSimulada(AlgoritmoBusca):
             pivo_alterado = False
 
             # # Percorre a vizinhança para encontrar a melhor solução
-            # for i in range(0, self.vizinhanca.tamanho - 1):
-            #     for j in range(i+1, self.vizinhanca.tamanho):
-            #         solucao_vizinha = self.vizinhanca.proximo_vizinho(solucao_pivo, i, j)
+            melhor_dos_vizinhos = solucao_pivo
+            for i in range(0, self.vizinhanca.tamanho - 1):
+                # print("Iteração: ", i, "\n")
+                for j in range(i+1, self.vizinhanca.tamanho):
+                    solucao_vizinha = self.vizinhanca.proximo_vizinho(solucao_pivo, i, j)
+
+                    if time.time() > self.tempo_limite:
+                        timeout = True
+                        break
 
 
-            i, j = 0, 1
-            while self.vizinhanca.proximo_vizinho(solucao_pivo, i, j):
 
-                # Gera uma nova solução vizinha
-                solucao_vizinha = self.vizinhanca.proximo_vizinho(solucao_pivo, i, j)
-
-                # Computa a variação de custo
-                variacao_de_custo = delta(solucao_vizinha.qualidade, solucao_pivo.qualidade)
-
-
-                # Verificações para aceitação da solução vizinha
-                if variacao_de_custo <= 0:
-                    solucao_pivo = solucao_vizinha
-                    pivo_alterado = True
-                else:
-                    if random.random() < probabilidade(variacao_de_custo, self.temperatura):
-                        solucao_pivo = solucao_vizinha
+                    if solucao_vizinha.qualidade < solucao_pivo.qualidade:
+                        if solucao_vizinha.qualidade < melhor_dos_vizinhos.qualidade:
+                            melhor_dos_vizinhos = solucao_vizinha
                         pivo_alterado = True
+                        solucao_pivo = solucao_vizinha
 
 
+                    elif self.temperatura > 0:
+                        variacao_de_custo = delta(solucao_vizinha.qualidade, solucao_pivo.qualidade)
+                        if variacao_de_custo <= 0:
+                            solucao_pivo = solucao_vizinha
+                            pivo_alterado = True
+                        
+                        else:
+                            if random.random() < probabilidade(variacao_de_custo, self.temperatura):
+                                solucao_pivo = solucao_vizinha
+                                pivo_alterado = True
 
-                # Se o pivo foi alterado, então faz as atualizações necessárias
-                if pivo_alterado:
-                    # Resfria a temperatura
-                    self.temperatura = self.resfriamento(self.temperatura)
-
-                    # Atualiza a melhor solução
-                    if solucao_pivo.qualidade < melhor_solucao.qualidade:
-                        melhor_solucao = solucao_pivo
-                    
-                    # Armazena a solução atual na lista de soluções
-                    solucoes.append(solucao_pivo)
-
-                    # Pula para a próxima iteração
+                                
+                if timeout or pivo_alterado:
                     break
 
+            if melhor_dos_vizinhos.qualidade < melhor_solucao.qualidade:
+                melhor_solucao = melhor_dos_vizinhos
+                solucoes.append(melhor_solucao)
 
-
-
-                # Atualiza os indices para busca na vizinhança
-                j += 1
-                if j == self.vizinhanca.tamanho:
-                    i += 1
-                    j = i + 1
-            
-
-            
-            # Se o pivo não foi alterado na iteração, então não há mais vizinhos encerra a busca
-            if not pivo_alterado:
+                if melhor_solucao.qualidade == self.solucao_otima:
+                    return solucoes
+            else:
                 break
+            iteracao += 1
+            self.temperatura = self.resfriamento(self.temperatura)
+
+            
+
+
+
+            # i, j = 0, 1
+            # while self.vizinhanca.proximo_vizinho(solucao_pivo, i, j):
+
+            #     # Gera uma nova solução vizinha
+            #     solucao_vizinha = self.vizinhanca.proximo_vizinho(solucao_pivo, i, j)
+
+            #     # Computa a variação de custo
+            #     variacao_de_custo = delta(solucao_vizinha.qualidade, solucao_pivo.qualidade)
+
+
+            #     # Verificações para aceitação da solução vizinha
+            #     if variacao_de_custo <= 0:
+            #         solucao_pivo = solucao_vizinha
+            #         pivo_alterado = True
+            #     else:
+            #         if random.random() < probabilidade(variacao_de_custo, self.temperatura):
+            #             solucao_pivo = solucao_vizinha
+            #             pivo_alterado = True
+
+
+
+            #     # Se o pivo foi alterado, então faz as atualizações necessárias
+            #     if pivo_alterado:
+            #         # Resfria a temperatura
+            #         self.temperatura = self.resfriamento(self.temperatura)
+
+            #         # Atualiza a melhor solução
+            #         if solucao_pivo.qualidade < melhor_solucao.qualidade:
+            #             melhor_solucao = solucao_pivo
+                    
+            #         # Armazena a solução atual na lista de soluções
+            #         solucoes.append(solucao_pivo)
+
+            #         # Pula para a próxima iteração
+            #         break
+
+
+
+
+            #     # Atualiza os indices para busca na vizinhança
+            #     j += 1
+            #     if j == self.vizinhanca.tamanho:
+            #         i += 1
+            #         j = i + 1
+            
+
+            
+            # # Se o pivo não foi alterado na iteração, então não há mais vizinhos encerra a busca
+            # if not pivo_alterado:
+            #     break
 
 
         return solucoes
