@@ -76,19 +76,21 @@ class BuscaLocalTemperaSimulada(AlgoritmoBusca):
                 for j in range(i+1, self.vizinhanca.tamanho):
                     solucao_vizinha = self.vizinhanca.proximo_vizinho(solucao_pivo, i, j)
 
+
+                    # Verifica se o tempo limite foi atingido
                     if time.time() > self.tempo_limite:
                         timeout = True
                         break
 
 
-
+                    # Verifica se a solução vizinha é melhor que a solução atual (pivô) e se é melhor que a melhor solução encontrada até o momento (melhor dos vizinhos) 
                     if solucao_vizinha.qualidade < solucao_pivo.qualidade:
                         if solucao_vizinha.qualidade < melhor_dos_vizinhos.qualidade:
                             melhor_dos_vizinhos = solucao_vizinha
                         pivo_alterado = True
                         solucao_pivo = solucao_vizinha
 
-
+                    # Verifica a temperatura e depois a probabilidade de aceitação da solução vizinha
                     elif self.temperatura > 0:
                         variacao_de_custo = delta(solucao_vizinha.qualidade, solucao_pivo.qualidade)
                         if variacao_de_custo <= 0:
@@ -100,10 +102,11 @@ class BuscaLocalTemperaSimulada(AlgoritmoBusca):
                                 solucao_pivo = solucao_vizinha
                                 pivo_alterado = True
 
-                                
+
                 if timeout or pivo_alterado:
                     break
 
+            # Verifica se a melhor solução encontrada é melhor que a melhor solução encontrada até o momento
             if melhor_dos_vizinhos.qualidade < melhor_solucao.qualidade:
                 melhor_solucao = melhor_dos_vizinhos
                 solucoes.append(melhor_solucao)
@@ -113,6 +116,7 @@ class BuscaLocalTemperaSimulada(AlgoritmoBusca):
             else:
                 break
             iteracao += 1
+            # Atualiza a temperatura (resfriamento)
             self.temperatura = self.resfriamento(self.temperatura)
 
             

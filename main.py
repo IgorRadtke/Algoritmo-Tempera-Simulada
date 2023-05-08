@@ -15,7 +15,7 @@ from Vizinhanca import Vizinhanca
 # from BuscaHibridaGulosoMelhorMelhora import BuscaHibridaGulosoMelhorMelhora
 # from BuscaHibridaGulosoTabu import BuscaHibridaGulosoTabu
 from BuscaLocalTemperaSimulada import BuscaLocalTemperaSimulada
-# from BuscaHibridaGulosoTemperaSimulada import BuscaHibridaGulosoTemperaSimulada
+from BuscaHibridaGulosoTemperaSimulada import BuscaHibridaGulosoTemperaSimulada
 
 
 def ler_arquivo(instancia: str) -> tuple:
@@ -72,7 +72,7 @@ ESTR_RESFRIAMENTO_GEOMETRICO = 1
 
 # Para a progressão geométrica: 0,5 < α < 1
 # Para a progressão linear: 0 < α < 0,1
-ALPHA = 0.9
+ALPHA = 0.06
 
 # Solução inicial para Busca Local Tempera Simulada
 SOLUCAO_INICIAL = 1
@@ -96,8 +96,8 @@ def main():
             # BuscaLocalPrimeiraMelhora(VizinhancaShift(distancias), solucao_otima),
             # BuscaTabu(Vizinhanca2opt(distancias), solucao_otima, parametro_mandato),
             # BuscaTabu(VizinhancaShift(distancias), solucao_otima, parametro_mandato),
-            BuscaLocalTemperaSimulada(Vizinhanca2opt(distancias), solucao_otima, ESTR_RESFRIAMENTO_GEOMETRICO, ALPHA), 
-            # BuscaHibridaGulosoTemperaSimulada(Vizinhanca(distancias), solucao_otima, ESTR_RESFRIAMENTO_GEOMETRICO, ALPHA),
+            # BuscaLocalTemperaSimulada(Vizinhanca2opt(distancias), solucao_otima, ESTR_RESFRIAMENTO_LINEAR, ALPHA), 
+            BuscaHibridaGulosoTemperaSimulada(Vizinhanca2opt(distancias), solucao_otima, ESTR_RESFRIAMENTO_LINEAR, ALPHA),
             )
         tempo_limite = tamanho * parametro_tempo
         print("Instância:", instancias[idx])
@@ -117,10 +117,10 @@ def main():
                 #escrever_resultados(resultados)
 
                 # Trecho usado para salvar no padrão das atividades
-                print("Lista de Soluções Geradas:" + str(solucao_list))
+                # print("Lista de Soluções Geradas:" + str(solucao_list))
 
-                for i in range(len(solucao_list)):
-                    print("Solução " + str(i) + ": " + str(solucao_list[i].qualidade) + " " + str(solucao_list[i].tempo) + " " + str(solucao_list[i].iteracao))
+                # for i in range(len(solucao_list)):
+                #     print("Solução " + str(i) + ": " + str(solucao_list[i].qualidade) + " " + str(solucao_list[i].tempo) + " " + str(solucao_list[i].iteracao))
                 melhor_qualidade = solucao_list[-1].qualidade
                 tempo_execucao = time.time() - tempo_inicial
                 resultados.append((melhor_qualidade, tempo_execucao))

@@ -30,14 +30,18 @@ class BuscaHibridaGulosoTemperaSimulada(AlgoritmoBusca):
     def buscar_solucao(self) -> list[Solucao]:
 
         guloso = BuscaConstrutivaGulosa(self.distancias, self.solucao_otima)
+        guloso.tempo_limite = self.tempo_limite
         solucoes_guloso = guloso.buscar_solucao()
+
+        self.solucao = solucoes_guloso[0]
+
 
         solucoes = []
         solucoes.extend(solucoes_guloso)
 
-        self.solucao = solucoes_guloso.sort(key=lambda solucao: solucao.qualidade)[0]
 
         tempera_simulada = BuscaLocalTemperaSimulada(self.vizinhanca, self.solucao_otima, self.resfriamento, self.alpha, self.solucao)
+        tempera_simulada.tempo_limite = self.tempo_limite
         solucoes_tempera_simulada = tempera_simulada.buscar_solucao()
         solucoes.extend(solucoes_tempera_simulada)
 
